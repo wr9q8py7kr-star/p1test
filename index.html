@@ -120,6 +120,44 @@
   .opt .lbl{color:var(--brand);font-weight:700;flex:0 0 auto;min-width:22px;}
   .opt-text{flex:1 1 auto;}
 
+  /* ---------- Matching & Word Bank ---------- */
+  .matching-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+    background:#fff;
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 1px 3px rgba(16,24,40,.07);
+    margin-top:12px;
+  }
+  .match-col{display:flex;flex-direction:column;gap:12px;}
+  .match-item{
+    display:flex;align-items:center;gap:10px;
+    padding:8px 12px;border-radius:10px;background:#f8fafc;
+    border:1px solid var(--line);
+  }
+  .match-num{font-weight:700;color:var(--brand);min-width:20px;}
+  .match-img{
+    font-size:28px;text-align:center;width:100%;height:60px;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;border-radius:8px;border:1px dashed #cbd5e1;
+  }
+  .wordbank-container{
+    display:flex;flex-wrap:wrap;gap:10px;
+    background:#fff;border-radius:14px;padding:16px;
+    box-shadow:0 1px 3px rgba(16,24,40,.07);
+    margin-top:12px;
+  }
+  .word-chip{
+    background:#eef2ff;color:#3730a3;
+    border:1px solid #c7d2fe;border-radius:999px;
+    padding:6px 16px;font-weight:600;font-size:16px;
+    cursor:pointer;transition:background .15s,transform .1s;
+  }
+  .word-chip:hover{background:#e0e7ff;}
+  .word-chip:active{transform:scale(.96);}
+
   /* ---------- Clickable / TTS ---------- */
   .tts{
     cursor:pointer;
@@ -230,6 +268,7 @@
     .subject-title{font-size:19px;}
     .item-head{font-size:16px;}
     .passage-text{font-size:16px;}
+    .matching-grid{grid-template-columns: 1fr;}
   }
 </style>
 </head>
@@ -299,7 +338,7 @@ const EXAMS = [
       title:'ตอนที่ 2 ให้นักเรียนอ่านเรื่องต่อไปนี้ แล้วตอบคำถามให้ถูกต้อง (5 คะแนน)',
       type:'reading',
       passageTitle:'เรื่อง นิดกับลูกนก',
-      passage:'เข้าวันอาทิตย์ นิดไปเดินเล่นที่สวนกับคุณแม่ นิดเห็นลูกนกตัวหนึ่งตกลงมาจากรัง ลูกนกร้องเสียงดัง นิดจึงค่อย ๆ อุ้มลูกนกขึ้นมา แล้ววางไว้บนกิ่งไม้ที่อยู่ต่ำ ไม่นาน แม่นกก็บินมาหาลูกนก นิดยิ้มอย่างมีความสุข',
+      passage:'เช้าวันอาทิตย์ นิดไปเดินเล่นที่สวนกับคุณแม่ นิดเห็นลูกนกตัวหนึ่งตกลงมาจากรัง ลูกนกร้องเสียงดัง นิดจึงค่อย ๆ อุ้มลูกนกขึ้นมา แล้ววางไว้บนกิ่งไม้ที่อยู่ต่ำ ไม่นาน แม่นกก็บินมาหาลูกนก นิดยิ้มอย่างมีความสุข',
       items:[
         { text:'นิดเห็นอะไรที่สวน (1 คะแนน)' },
         { text:'นิดช่วยลูกนกอย่างไร (1 คะแนน)' },
@@ -455,10 +494,18 @@ const EXAMS = [
     },
     {
       title:'ตอนที่ 2 ให้นักเรียนจับคู่คำศัพท์กับรูปภาพให้ถูกต้อง (10 คะแนน)',
-      type:'plain',
-      lines:[
-        'คำศัพท์ที่ต้องจับคู่ มีดังนี้ 1. Father  2. Mother  3. Brother  4. Sister  5. Grandfather  6. Grandmother  7. Green  8. Yellow  9. Red  10. Blue',
-        'รูปภาพในแบบทดสอบเรียงตามลำดับดังนี้ รูปที่ 1 ปู่/ตา, รูปที่ 2 ย่า/ยาย, รูปที่ 3 วงกลมสีน้ำเงิน, รูปที่ 4 พ่อ, รูปที่ 5 วงกลมสีเขียว, รูปที่ 6 แม่, รูปที่ 7 วงกลมสีเหลือง, รูปที่ 8 พี่ชาย, รูปที่ 9 วงกลมสีแดง, รูปที่ 10 พี่สาว'
+      type:'matching',
+      pairs:[
+        { en:'Father', img:'👨', th:'พ่อ' },
+        { en:'Mother', img:'👩', th:'แม่' },
+        { en:'Brother', img:'👦', th:'พี่ชาย' },
+        { en:'Sister', img:'👧', th:'พี่สาว' },
+        { en:'Grandfather', img:'👴', th:'ปู่/ตา' },
+        { en:'Grandmother', img:'👵', th:'ย่า/ยาย' },
+        { en:'Green', img:'🟢', th:'สีเขียว' },
+        { en:'Yellow', img:'🟡', th:'สีเหลือง' },
+        { en:'Red', img:'🔴', th:'สีแดง' },
+        { en:'Blue', img:'🔵', th:'สีน้ำเงิน' }
       ]
     }
   ]
@@ -527,11 +574,9 @@ const EXAMS = [
     },
     {
       title:'ตอนที่ 2 ให้นักเรียนนำคำที่กำหนดให้ เติมในช่องว่างให้ถูกต้อง (10 คะแนน)',
-      type:'plain',
-      lines:[
-        'คำที่กำหนดให้ : ฉัน   พี่สาว   พี่ชาย   พ่อ   แม่   น้า   ตา   ยาย   ลูกพี่ลูกน้อง',
-        'ให้นักเรียนนำคำที่กำหนดให้ไปเติมในช่องว่างของแผนภูมิครอบครัวในแบบทดสอบให้ถูกต้อง'
-      ]
+      type:'wordbank',
+      instruction:'ให้นักเรียนนำคำที่กำหนดให้ไปเติมในช่องว่างของแผนภูมิครอบครัวในแบบทดสอบให้ถูกต้อง',
+      words:['ฉัน', 'พี่สาว', 'พี่ชาย', 'พ่อ', 'แม่', 'น้า', 'ตา', 'ยาย', 'ลูกพี่ลูกน้อง']
     }
   ]
 },
@@ -621,38 +666,75 @@ const EXAMS = [
 ];
 
 /* =========================================================
-   ระบบอ่านออกเสียง
+   ระบบอ่านออกเสียง (อัปเกรด — เลือกเสียงธรรมชาติคุณภาพสูงสุด)
    ========================================================= */
 const synth = window.speechSynthesis || null;
 let voices = [];
-let currentRate = 1;
+let currentRate = 1;             // ความเร็วเริ่มต้นของ slider (ใช้กับผู้ใช้ที่ปรับ)
+let bestThaiVoice = null;
+let bestEnglishVoice = null;
+
+/* ---- เลือกเสียงที่ดีที่สุด ---- */
+function pickBestVoice(langPrefix){
+  if(!synth) return null;
+  const list = (voices && voices.length) ? voices : (synth.getVoices() || []);
+  if(!list.length) return null;
+
+  const isThai = langPrefix === 'th';
+  const preferredNames = isThai
+    ? ['Google ไทย','Google Thai','Microsoft Pattara','Microsoft Premwadee','Kanya','Pattara','Th-TH','Thai']
+    : ['Google US English','Google UK English','Microsoft David','Microsoft Zira','Microsoft Mark',
+       'Alex','Samantha','Daniel','Karen','Moira','Tessa','en-US','en-GB','en-AU','English'];
+
+  // 1) หาชื่อที่ต้องการ + lang ตรง + เป็น local (คุณภาพสูง)
+  for(const name of preferredNames){
+    const found = list.find(v =>
+      (v.lang && v.lang.toLowerCase().startsWith(langPrefix)) &&
+      (v.name && v.name.toLowerCase().includes(name.toLowerCase()))
+    );
+    if(found) return found;
+  }
+  // 2) หา lang ตรง + local
+  let v = list.find(x => x.lang && x.lang.toLowerCase().startsWith(langPrefix) && x.localService);
+  if(v) return v;
+  // 3) หา lang ตรง
+  v = list.find(x => x.lang && x.lang.toLowerCase().startsWith(langPrefix));
+  if(v) return v;
+  // 4) หาจากชื่อ
+  for(const name of preferredNames){
+    const found = list.find(v => v.name && v.name.toLowerCase().includes(name.toLowerCase()));
+    if(found) return found;
+  }
+  return null;
+}
 
 function refreshVoices(){
   if(!synth) return;
   try { voices = synth.getVoices() || []; } catch(e){ voices = []; }
+  bestThaiVoice    = pickBestVoice('th');
+  bestEnglishVoice = pickBestVoice('en');
   updateVoiceInfo();
-}
-
-function pickVoice(prefix){
-  if(!synth) return null;
-  const list = (voices && voices.length) ? voices : (synth.getVoices() || []);
-  let v = list.find(x => x.lang && x.lang.toLowerCase().indexOf(prefix) === 0 && x.localService);
-  if(!v) v = list.find(x => x.lang && x.lang.toLowerCase().indexOf(prefix) === 0);
-  if(!v) v = list.find(x => x.name && x.name.toLowerCase().indexOf(prefix) === 0);
-  return v || null;
 }
 
 function updateVoiceInfo(){
   const info = document.getElementById('voiceInfo');
   if(!synth){ info.textContent = '⚠️ เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง'; return; }
-  const th = pickVoice('th');
-  if(!th){
-    info.textContent = '⚠️ ไม่พบเสียงภาษาไทยในเครื่องนี้';
+
+  const parts = [];
+  if(bestThaiVoice){
+    const n = bestThaiVoice.name.split('(')[0].split('–')[0].trim();
+    parts.push('🇹🇭 ' + n);
   } else {
-    info.textContent = '🔊 ' + th.name.split('(')[0].trim();
+    parts.push('🇹🇭 ⚠️ ไม่พบเสียงไทย');
   }
+  if(bestEnglishVoice){
+    const n = bestEnglishVoice.name.split('(')[0].split('–')[0].trim();
+    parts.push('🇬🇧 ' + n);
+  }
+  info.textContent = '🔊 ' + parts.join(' · ');
 }
 
+/* ---- อ่านออกเสียง ---- */
 function speak(text, node){
   if(!synth){ showToast('⚠️ เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง'); return; }
   if(!text || !text.trim()) return;
@@ -663,11 +745,18 @@ function speak(text, node){
 
   const u = new SpeechSynthesisUtterance(text);
   const isThai = /[\u0E00-\u0E7F]/.test(text);
-  u.lang = isThai ? 'th-TH' : 'en-US';
-  const v = pickVoice(isThai ? 'th' : 'en');
-  if(v) u.voice = v;
-  u.rate = currentRate;
-  u.pitch = 1;
+
+  if(isThai){
+    u.lang = 'th-TH';
+    if(bestThaiVoice) u.voice = bestThaiVoice;
+    u.rate  = currentRate * 0.92;    // ภาษาไทยใช้ความเร็วค่อนข้างช้า ให้ฟังชัด
+    u.pitch = 1.0;
+  } else {
+    u.lang = 'en-US';
+    if(bestEnglishVoice) u.voice = bestEnglishVoice;
+    u.rate  = currentRate * 0.85;    // ภาษาอังกฤษใช้ความเร็ว 0.8-0.85 เหมือนคนพูดจริง
+    u.pitch = 1.0;
+  }
 
   const clear = () => { if(node) node.classList.remove('speaking'); };
   u.onend = clear;
@@ -757,7 +846,7 @@ function renderOptions(container, options, exam){
   options.forEach((opt, i) => {
     const row = el('div', 'opt');
     const lbl = el('span', 'lbl', (LABELS[i] || '') + '.');
-    const txt = el('span', 'opt-text', opt); // <-- แสดงข้อความตัวเลือก
+    const txt = el('span', 'opt-text', opt);
 
     const isSingleLatin = /^[A-Za-z]{1,2}$/.test(opt.trim());
     if(exam.skipLetterRead && isSingleLatin){
@@ -826,15 +915,62 @@ function renderExam(){
       });
     }
 
-    // รายการข้อสอบ
+    // ข้อสอบแบบจับคู่ (Matching)
+    if(sec.type === 'matching' && sec.pairs){
+      const grid = el('div', 'matching-grid');
+      const leftCol = el('div', 'match-col');
+      const rightCol = el('div', 'match-col');
+
+      sec.pairs.forEach((pair, i) => {
+        const leftItem = el('div', 'match-item');
+        leftItem.appendChild(el('span', 'match-num', (i + 1) + '.'));
+        const wordSpan = el('span', '', pair.en);
+        makeTTS(wordSpan, pair.en);
+        leftItem.appendChild(wordSpan);
+        leftCol.appendChild(leftItem);
+
+        const rightItem = el('div', 'match-item');
+        const imgSpan = el('div', 'match-img', pair.img);
+        rightItem.appendChild(imgSpan);
+        rightCol.appendChild(rightItem);
+      });
+
+      grid.appendChild(leftCol);
+      grid.appendChild(rightCol);
+      sectionEl.appendChild(grid);
+
+      const hint = el('p', 'subject-desc', '💡 หมายเหตุ: รูปภาพเป็นเพียงสัญลักษณ์จำลอง นักเรียนสามารถจับคู่ตามคำศัพท์ที่กำหนดให้');
+      hint.style.marginTop = '12px';
+      sectionEl.appendChild(hint);
+    }
+
+    // ข้อสอบแบบคลังคำศัพท์ (Word Bank)
+    if(sec.type === 'wordbank' && sec.words){
+      if(sec.instruction){
+        const inst = el('p', 'plain-line');
+        const s = el('span', '', sec.instruction);
+        makeTTS(s, sec.instruction);
+        inst.appendChild(s);
+        sectionEl.appendChild(inst);
+      }
+
+      const bank = el('div', 'wordbank-container');
+      sec.words.forEach(word => {
+        const chip = el('div', 'word-chip', word);
+        makeTTS(chip, word);
+        bank.appendChild(chip);
+      });
+      sectionEl.appendChild(bank);
+    }
+
+    // รายการข้อสอบ (MC / TF / Open)
     if(sec.items && sec.items.length){
       sec.items.forEach((item, idx) => {
         const card = el('div', 'item');
         const head = el('div', 'item-head');
         head.appendChild(el('span', 'num', (idx + 1) + '.'));
 
-        // *** แก้ไขจุดสำคัญ: ส่ง item.text เข้าไปเป็นพารามิเตอร์ที่ 3 เพื่อแสดงข้อความ ***
-        const txt = el('span', 'item-text', item.text); 
+        const txt = el('span', 'item-text', item.text);
         const questionSpeech = 'ข้อ ' + (idx + 1) + ' ' + item.text;
         makeTTS(txt, questionSpeech);
         head.appendChild(txt);
@@ -843,7 +979,6 @@ function renderExam(){
           head.appendChild(el('span', 'tf-mark', '✓ / ✗'));
         }
 
-        // ปุ่ม "ฟังทั้งข้อ" — อ่านคำถาม + ตัวเลือกทั้งหมด
         const playAllBtn = el('button', 'play-all', '🔊 ฟังทั้งข้อ');
         playAllBtn.type = 'button';
         playAllBtn.setAttribute('title', 'ฟังคำถามและตัวเลือกทั้งหมด');
@@ -915,13 +1050,24 @@ function init(){
   initHeaderTTS();
   renderTabs();
   renderExam();
+
+  // โหลดรายการเสียงหลายรอบ — บางเบราว์เซอร์ (โดยเฉพาะ Chrome) จะโหลดเสียงเสร็จช้า
   refreshVoices();
   if(synth){
     if(typeof synth.onvoiceschanged !== 'undefined'){
       synth.onvoiceschanged = refreshVoices;
     }
-    setTimeout(refreshVoices, 300);
+    // ลองเช็คซ้ำหลายรอบให้แน่ใจว่าโหลดเสียงครบแล้ว
+    setTimeout(refreshVoices, 200);
+    setTimeout(refreshVoices, 600);
     setTimeout(refreshVoices, 1200);
+    setTimeout(refreshVoices, 2500);
+    // ลอง warm-up speech engine ให้พร้อมใช้
+    try {
+      const warm = new SpeechSynthesisUtterance('');
+      warm.volume = 0;
+      synth.speak(warm);
+    } catch(e){}
   }
   window.addEventListener('beforeunload', stopSpeaking);
 }
